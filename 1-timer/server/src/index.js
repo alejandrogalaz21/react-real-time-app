@@ -1,12 +1,17 @@
-import http from "http"
+import socketIo from "socket.io"
+const io = socketIo()
+const port = 8000
 
-const server = http
-  .createServer((req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" })
-    res.end("Hello World\n")
+io.on("connection", client => {
+  client.on("subscribeToTimer", interval => {
+    console.log(`Client is subscribing to timer with interval ${interval}`)
+    setInterval(() => {
+      client.emit("timer", new Date())
+    }, interval)
   })
-  .listen(1337, "127.0.0.1")
+})
 
-console.log("Server running at http://127.0.0.1:1337/")
+io.listen(port)
+console.log(`Server Listing on port ${port}`)
 
-export default server
+export default io
