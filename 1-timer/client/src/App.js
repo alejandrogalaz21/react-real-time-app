@@ -2,15 +2,20 @@ import React, { Component } from "react"
 import { subscribeToTimer } from "./api"
 
 export default class App extends Component {
-  constructor(props) {
-    super(props)
-    subscribeToTimer(timesstamp => this.setState({ timesstamp }))
+  state = {
+    timestamp: "no timestamp"
   }
 
-  state = {
-    timesstamp: "no time stamp"
+  constructor(props) {
+    super(props)
+    subscribeToTimer(timestamp => this.setState({ timestamp }))
   }
+
   render() {
-    return <div>{this.state.timesstamp}</div>
+    return (
+      <div>
+        This is the value of the timer timestamp : {this.state.timestamp}
+      </div>
+    )
   }
 }
