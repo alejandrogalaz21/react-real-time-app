@@ -1,0 +1,35 @@
+{
+  "name": "1-timer",
+  "version": "1.0.0",
+  "description": "real time app server",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "nodemon src/index.js --exec babel-node",
+    "build": "babel src -d dist",
+    "serve": "node dist/index.js",
+    "test": "mocha --require @babel/register"
+  },
+  "keywords": [
+    "node",
+    "node.js",
+    "js",
+    "javascript",
+    "socket.io",
+    "sockets"
+  ],
+  "author": "alejandro galaz",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/register": "^7.4.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.5"
+  },
+  "dependencies": {
+    "rethinkdb": "^2.3.3",
+    "socket.io": "^2.3.0"
+  }
+}
