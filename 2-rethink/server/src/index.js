@@ -27,14 +27,12 @@ rethinkdb
           })
           .catch(error => {
             throw new error(error)
-            console.error(error)
           })
       })
     })
   })
   .catch(error => {
     throw new error(error)
-    console.error(error)
   })
 
 io.listen(port)
