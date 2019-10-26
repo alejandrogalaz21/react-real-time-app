@@ -1,5 +1,5 @@
-import socketIo from 'socket.io'
 import r from 'rethinkdb'
+import socketIo from 'socket.io'
 
 const io = socketIo()
 const port = 3001
@@ -20,6 +20,7 @@ r.connect({
           .then(cursor => {
             cursor.each((error, timerRow) => {
               if (error) console.error(error)
+              console.log(timerRow)
               client.emit('timer', timerRow.new_val.timestamp)
             })
           })
