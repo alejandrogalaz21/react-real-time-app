@@ -1,9 +1,9 @@
-import React, { Component } from "react"
-import { subscribeToTimer } from "./api"
+import React, { Component } from 'react'
+import { subscribeToTimer } from './api'
 
 export default class App extends Component {
   state = {
-    timestamp: "no timestamp"
+    timestamp: 'no timestamp'
   }
 
   constructor(props) {
