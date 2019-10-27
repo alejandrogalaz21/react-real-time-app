@@ -6,10 +6,13 @@ const port = 3001
 
 /**
  *
- * @param {*} { connection, name }
- * @description
+ *
+ * @param {*} connection
+ * @param {*} name
+ * @description create a new name in the
+ * table drawins.
  */
-function createDrawing({ connection, name }) {
+function createDrawing(connection, name) {
   r.table('drawings')
     .insert({
       name,
