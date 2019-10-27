@@ -29,7 +29,7 @@ function createDrawing(connection, name) {
  * @description susbscribe to the drawings and emit
  * the new changes in the database to the client.
  */
-function subscribeToDrawings({ client, connection }) {
+function subscribeToDrawings(client, connection) {
   r.table('drawings')
     .changes({ include_initial: true })
     .run(connection)
