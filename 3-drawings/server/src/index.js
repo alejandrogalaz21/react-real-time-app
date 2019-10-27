@@ -4,6 +4,40 @@ import socketIo from 'socket.io'
 const io = socketIo()
 const port = 3001
 
+/**
+ *
+ * @param {*} { connection, name }
+ * @description
+ */
+function createDrawing({ connection, name }) {
+  r.table('drawings')
+    .insert({
+      name,
+      timestamp: new Date()
+    })
+    .run(connection)
+    .then(() => console.log(`create a drawing with name ${name}`))
+    .catch(error => console.error(error))
+}
+
+/**
+ *
+ * @param {*} { client, connection }
+ * @description susbscribe to the drawings and emit
+ * the new changes in the database to the client.
+ */
+function subscribeToDrawings({ client, connection }) {
+  r.table('drawings')
+    .changes({ include_initial: true })
+    .run(connection)
+    .then(cursor => {
+      cursor.each((error, drawingRow) => {
+        if (error) throw new error(error)
+        client.emit('drawing', drawingRow.new_val)
+      })
+    })
+}
+
 r.connect({
   host: 'localhost',
   port: 28015,
@@ -11,21 +45,14 @@ r.connect({
 })
   .then(connection => {
     io.on('connection', client => {
-      client.on('subscribeToTimer', interval => {
-        console.log(`Client is subscribing to timer with interval ${interval}`)
-
-        r.table('timers')
-          .changes()
-          .run(connection)
-          .then(cursor => {
-            cursor.each((error, timerRow) => {
-              if (error) console.error(error)
-              console.log(timerRow)
-              client.emit('timer', timerRow.new_val.timestamp)
-            })
-          })
-          .catch(error => console.error(error))
+      // event to create Drawings
+      client.on('createDrawing', ({ name }) => {
+        createDrawing(connection, name)
       })
+      // event to subscribe to the Drawings
+      client.on('subscribeToDrawings', () =>
+        subscribeToDrawings(client, connection)
+      )
     })
   })
   .catch(error => console.error(error))

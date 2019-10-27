@@ -1,7 +1,26 @@
-import openScoket from "socket.io-client"
+import openScoket from 'socket.io-client'
 const socket = openScoket()
 
-export function subscribeToTimer(cb) {
-  socket.on("timer", timestamp => cb(timestamp))
-  socket.emit("subscribeToTimer", 1000)
+/**
+ *
+ * @export
+ * @param {*} cb
+ * @description this function hangle the
+ * handle the components subscriptions
+ * for render the drawings
+ */
+export function subscribeToDrawings(cb) {
+  socket.on('drawing', cb)
+  socket.emit('subscribeToDrawings')
+}
+
+/**
+ *
+ * @export
+ * @param {*} name
+ * @description emit the drawings to
+ * the server in real time to the db
+ */
+export function createDrawing(name) {
+  socket.emit('createDrawing', { name })
 }

@@ -1,20 +1,15 @@
-import React, { Component } from "react"
-import { subscribeToTimer } from "./api"
+import './App.css'
+import React, { Component } from 'react'
+import DrawingForm from './components/DrawingForm'
 
 export default class App extends Component {
-  state = {
-    timestamp: "no timestamp"
-  }
-
-  constructor(props) {
-    super(props)
-    subscribeToTimer(timestamp => this.setState({ timestamp }))
-  }
-
   render() {
     return (
-      <div>
-        This is the value of the timer timestamp : {this.state.timestamp}
+      <div className='App'>
+        <div className='App-header'>
+          <h2>Our awesome drawing app</h2>
+        </div>
+        <DrawingForm />
       </div>
     )
   }
