@@ -45,6 +45,8 @@ function subscribeToDrawings(client, connection) {
  *
  * @param {*} connection
  * @param {*} line
+ * @description this function inserts on
+ * the db new lines in the table lines.
  */
 function handleLinePublish(connection, line) {
   console.log('saving line to the db')
@@ -54,6 +56,30 @@ function handleLinePublish(connection, line) {
     .run(connection)
 }
 
+/**
+ *
+ * @param {*} client
+ * @param {*} connection
+ * @param {*} drawingId
+ * @returns promise
+ * @description this function send data to the sockets of each
+ * new line of the drawing.
+ */
+function subscribeToDrawingLines(client, connection, drawingId) {
+  return r
+    .table('lines')
+    .filter(r.row('drawingId').eq(drawingId))
+    .changes({ include_initial: true })
+    .run(connection)
+    .then(cursor => {
+      cursor.each((error, lineRow) => {
+        if (error) throw new error(error)
+        client.emit(`drawingLine:${drawingId}`, lineRow.lineRow_val)
+      })
+    })
+    .catch(error => console.error(error))
+}
+
 r.connect({
   host: 'localhost',
   port: 28015,
@@ -61,16 +87,20 @@ r.connect({
 })
   .then(connection => {
     io.on('connection', client => {
-      // event to create Drawings
+      // event to create Drawings.
       client.on('createDrawing', ({ name }) => {
         createDrawing(connection, name)
       })
-      // event to subscribe to the Drawings
+      // event to subscribe to the Drawings/
       client.on('subscribeToDrawings', () =>
         subscribeToDrawings(client, connection)
       )
-
+      // this event pass the data and save to the db/
       client.on('publishLine', line => handleLinePublish(connection, line))
+      // this event pass to the sockets the new changes.
+      client.on('subscribeToDrawingLines', drawingId =>
+        subscribeToDrawingLines(client, connection, drawingId)
+      )
     })
   })
   .catch(error => console.error(error))
