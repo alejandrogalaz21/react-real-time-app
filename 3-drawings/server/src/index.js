@@ -1,5 +1,5 @@
-import r from "rethinkdb"
-import socketIo from "socket.io"
+import r from 'rethinkdb'
+import socketIo from 'socket.io'
 
 const io = socketIo()
 const port = 3001
@@ -13,7 +13,7 @@ const port = 3001
  * table drawings.
  */
 function createDrawing(connection, name) {
-  r.table("drawings")
+  r.table('drawings')
     .insert({
       name,
       timestamp: new Date()
@@ -30,32 +30,47 @@ function createDrawing(connection, name) {
  * the new changes in the database to the client.
  */
 function subscribeToDrawings(client, connection) {
-  r.table("drawings")
+  r.table('drawings')
     .changes({ include_initial: true })
     .run(connection)
     .then(cursor => {
       cursor.each((error, drawingRow) => {
         if (error) throw new error(error)
-        client.emit("drawing", drawingRow.new_val)
+        client.emit('drawing', drawingRow.new_val)
       })
     })
 }
 
+/**
+ *
+ * @param {*} connection
+ * @param {*} line
+ */
+function handleLinePublish(connection, line) {
+  console.log('saving line to the db')
+  const data = { ...line, timestamp: new Date() }
+  r.table('lines')
+    .insert(data)
+    .run(connection)
+}
+
 r.connect({
-  host: "localhost",
+  host: 'localhost',
   port: 28015,
-  db: "awesome_whiteboard"
+  db: 'awesome_whiteboard'
 })
   .then(connection => {
-    io.on("connection", client => {
+    io.on('connection', client => {
       // event to create Drawings
-      client.on("createDrawing", ({ name }) => {
+      client.on('createDrawing', ({ name }) => {
         createDrawing(connection, name)
       })
       // event to subscribe to the Drawings
-      client.on("subscribeToDrawings", () =>
+      client.on('subscribeToDrawings', () =>
         subscribeToDrawings(client, connection)
       )
+
+      client.on('publishLine', line => handleLinePublish(connection, line))
     })
   })
   .catch(error => console.error(error))

@@ -24,3 +24,7 @@ export function subscribeToDrawings(cb) {
 export function createDrawing(name) {
   socket.emit('createDrawing', { name })
 }
+
+export function publishLine({ drawingId, line }) {
+  socket.emit('publishLine', { drawingId, line })
+}
